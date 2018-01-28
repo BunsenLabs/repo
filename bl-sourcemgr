@@ -167,8 +167,7 @@ def find_entries(entries, opts):
             return True
 
         if opts.regex:
-            r = re.compile(y, flags=re.IGNORECASE)
-            return r.search(x)
+            return not not re.search(y, x, flags=re.IGNORECASE)
 
         return x == y
 
@@ -214,7 +213,7 @@ def main():
         elif opts.verb == "apply-template":
             def match_distro(v):
                 if opts.regex:
-                    return not not re.search(opts.distribution, v)
+                    return not not re.search(opts.distribution, v, flags=re.IGNORECASE)
                 else:
                     return v == opts.distribution
             di = distinfo.DistInfo(dist=opts.template)
