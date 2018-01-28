@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# bl-sourcemgr - CLI around python-apt for simpe APT sources.list entry management
+# apt-sourcemgr - CLI around python-apt for simpe APT sources.list entry management
 # Copyright (C) 2018 Jens John <dev ! 2ion ! de>
 # 
 # This program is free software: you can redistribute it and/or modify
