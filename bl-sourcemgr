@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from argparse import (ArgumentParser, ArgumentDefaultsHelpFormatter, ArgumentError)
-from aptsources import sourceslist
+from aptsources import sourceslist, distinfo
 import sys
 import os
 import re
@@ -29,7 +29,7 @@ def get_options():
             formatter_class=ArgumentDefaultsHelpFormatter)
 
     ap.add_argument("verb",
-            choices=["add","remove","enable","disable","find"],
+            choices=["add","remove","enable","disable","find","apply-template"],
             help="""
 Action the program takes.
 
@@ -45,6 +45,10 @@ ensure they're enabled (not commented out).
 
 disable - Find existing entries matching the filter specification, and
 ensure they're disabled (commented out).
+
+apply-template - Ensures that all sources.list entries mandated by the
+given APT template are present and enabled. Use --template to pass in
+the template name.
 """)
     ap.add_argument("-F", "--file",
             default=None,
@@ -135,6 +139,13 @@ Do not save any changes. Implies --verbose.
             help="""
 Log program actions to stderr.
 """)
+    ap.add_argument("-T", "--template",
+            default=None,
+            type=str,
+            help="""
+Derive all specifications from the given pyton-apt template. Only used
+by the apply-template action.
+""")
 
     return ap.parse_args()
 
@@ -155,7 +166,7 @@ def find_entries(entries, opts):
         if y is None:
             return True
 
-        if opts.regex_uri:
+        if opts.regex:
             r = re.compile(y, flags=re.IGNORECASE)
             return r.search(x)
 
@@ -180,13 +191,18 @@ def find_entries(entries, opts):
 
 def main():
     opts = get_options()
-    deletion_queue = []
 
     if opts.verb != "find" and os.geteuid() > 0:
         print("Error: The given action requires root privileges.")
         return EXIT_FAILURE
 
+    if (opts.verb == "apply-template" and (opts.template is None or
+        len(opts.template)==0)):
+        print("Error: `apply-template` requires a non-empty --template paramter.")
+        return EXIT_FAILURE
+
     try:
+        deletion_queue = []
         src = sourceslist.SourcesList()
 
         if opts.verb == "add":
@@ -194,8 +210,19 @@ def main():
             if opts.file is not None:
                 kwargs["file"] = opts.file
             src.add(opts.type, opts.uri, opts.distribution, opts.component, **kwargs)
+        elif opts.verb == "apply-template":
+            di = distinfo.DistInfo(dist=opts.template)
+            for t in di.templates:
+                # FIXME: As long as we do not have geographical location
+                # matching, use the shortest mirror host. This works for
+                # BL since we have a geo-aware loadbalancer.
+                mirror = t.mirror_set[sorted(t.mirror_set.keys(), key=len)[0]]
+                uri = mirror.get_repo_urls()[0]
+                base_components = t.components if len(t.components)>0 else t.parents[0].components
+                components = [ x.name for x in base_components ]
+                print(src.add(t.type, uri, t.name, [ x.name for x in t.components ]))
         else:
-            entries = find_entries(src.list, opts)
+            entries = list(find_entries(src.list, opts))
             if len(entries) == 0:
                 return EXIT_NOMATCH
 
@@ -223,12 +250,12 @@ def main():
         if not opts.simulate and opts.verb != "find":
             src.save()
             for path in deletion_queue:
-                #os.remove(path)
+                os.remove(path)
     except BaseException as e:
         print("ERROR, will not save any change(s):", e)
         return EXIT_FAILURE
 
-    return 0
+    return EXIT_SUCCESS
 
 if __name__ == "__main__":
     sys.exit(main())
