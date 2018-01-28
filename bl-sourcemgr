@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from argparse import (ArgumentParser, ArgumentDefaultsHelpFormatter, ArgumentError)
 from aptsources import sourceslist, distinfo
-import sys
+from argparse import (ArgumentParser, ArgumentDefaultsHelpFormatter, ArgumentError)
 import os
 import re
+import sys
 
 EXIT_SUCCESS, EXIT_FAILURE, EXIT_NOMATCH = 0, 1, 2
 
@@ -192,12 +192,14 @@ def main():
     opts = get_options()
 
     if opts.verb != "find" and os.geteuid() > 0:
-        print("Error: The given action requires root privileges.")
+        print("Error: The given action requires root privileges.",
+                file=sys.stderr)
         return EXIT_FAILURE
 
     if (opts.verb == "apply-template" and (opts.template is None or
         opts.distribution is None)):
-        print("Error: `apply-template` requires non-empty --template and --distribution paramters.")
+        print("Error: `apply-template` requires non-empty --template and --distribution paramters.",
+                file=sys.stderr)
         return EXIT_FAILURE
 
     try:
@@ -238,7 +240,8 @@ def main():
                         deletion_queue.append(e.file)
                         src.remove(e)
                     else:
-                        print("Entry has other neighbours, disabling instead of removing: <{}>".format(e))
+                        print("Entry has other neighbours, disabling instead of removing: <{}>".format(e),
+                                file=sys.stderr)
                         e.set_enabled(False)
 
             elif opts.verb == "enable":
@@ -254,7 +257,7 @@ def main():
             for path in deletion_queue:
                 os.remove(path)
     except BaseException as e:
-        print("ERROR, will not save any change(s):", e)
+        print("ERROR, will not save any change(s):", e, file=sys.stderr)
         return EXIT_FAILURE
 
     return EXIT_SUCCESS
