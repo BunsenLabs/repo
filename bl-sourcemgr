@@ -103,7 +103,7 @@ filter paramters will match.
 
 Applies only to: --architecture, --component.
 """)
-    ap.add_argument("-r", "--regex-uri-and-distro",
+    ap.add_argument("-r", "--regex",
             default=False,
             action="store_true",
             help="""
@@ -149,7 +149,7 @@ def find_entries(entries, opts):
 
         return set(x) == set(y)
 
-    def cmp_uri(x, y):
+    def cmp_regex(x, y):
         if y is None:
             return True
 
@@ -167,8 +167,8 @@ def find_entries(entries, opts):
     def _filter(e):
         return (cmp_list(e.architectures, opts.architecture) and
                 cmp_list(e.comps, opts.component) and
-                cmp_uri(e.uri, opts.uri) and
-                cmp_other(e.dist, opts.distribution) and
+                cmp_regex(e.uri, opts.uri) and
+                cmp_regex(e.dist, opts.distribution) and
                 cmp_other(not e.disabled, opts.enabled) and
                 cmp_other(e.disabled, opts.disabled) and
                 cmp_other(e.invalid, opts.invalid) and
