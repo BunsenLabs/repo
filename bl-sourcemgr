@@ -224,6 +224,9 @@ def main():
                 base_uri = t.base_uri if t.base_uri is not None else t.parents[0].base_uri
                 base_components = [ c.name for c in (t.components if
                     len(t.components)>0 else t.parents[0].components) ]
+                if opts.component is not None:
+                    base_components = list(filter(lambda c: c in opts.component,
+                        base_components))
                 src.add(t.type, base_uri, t.name, base_components)
         else:
             entries = list(find_entries(src.list, opts))
