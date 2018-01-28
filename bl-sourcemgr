@@ -22,6 +22,8 @@ import sys
 import os
 import re
 
+EXIT_SUCCESS, EXIT_FAILURE, EXIT_NOMATCH = 0, 1, 2
+
 def get_options():
     ap = ArgumentParser(description="""CLI for managing local APT sources.list configuration""",
             formatter_class=ArgumentDefaultsHelpFormatter)
@@ -182,7 +184,7 @@ def main():
 
     if opts.verb != "find" and os.geteuid() > 0:
         print("Error: The given action requires root privileges.")
-        return 1
+        return EXIT_FAILURE
 
     try:
         src = sourceslist.SourcesList()
@@ -194,9 +196,13 @@ def main():
             src.add(opts.type, opts.uri, opts.distribution, opts.component, **kwargs)
         else:
             entries = find_entries(src.list, opts)
+            if len(entries) == 0:
+                return EXIT_NOMATCH
+
             if opts.verb == "find":
                 for e in entries:
                     print(e)
+
             elif opts.verb == "remove":
                 for e in entries:
                     if all([ x is not e and x.file != e.file for x in src.list ]):
@@ -205,9 +211,11 @@ def main():
                     else:
                         print("Entry has other neighbours, disabling instead of removing: <{}>".format(e))
                         e.set_enabled(False)
+
             elif opts.verb == "enable":
                 for e in entries:
                     e.set_enabled(True)
+
             elif opts.verb == "disable":
                 for e in entries:
                     e.set_enabled(False)
@@ -215,11 +223,10 @@ def main():
         if not opts.simulate and opts.verb != "find":
             src.save()
             for path in deletion_queue:
-                print("Would delete", path)
                 #os.remove(path)
     except BaseException as e:
         print("ERROR, will not save any change(s):", e)
-        return 1
+        return EXIT_FAILURE
 
     return 0
 
