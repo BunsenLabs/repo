@@ -197,8 +197,8 @@ def main():
         return EXIT_FAILURE
 
     if (opts.verb == "apply-template" and (opts.template is None or
-        len(opts.template)==0)):
-        print("Error: `apply-template` requires a non-empty --template paramter.")
+        opts.distribution is None)):
+        print("Error: `apply-template` requires non-empty --template and --distribution paramters.")
         return EXIT_FAILURE
 
     try:
@@ -210,17 +210,20 @@ def main():
             if opts.file is not None:
                 kwargs["file"] = opts.file
             src.add(opts.type, opts.uri, opts.distribution, opts.component, **kwargs)
+
         elif opts.verb == "apply-template":
+            def match_distro(v):
+                if opts.regex:
+                    return not not re.search(opts.distribution, v)
+                else:
+                    return v == opts.distribution
             di = distinfo.DistInfo(dist=opts.template)
-            for t in di.templates:
-                # FIXME: As long as we do not have geographical location
-                # matching, use the shortest mirror host. This works for
-                # BL since we have a geo-aware loadbalancer.
-                mirror = t.mirror_set[sorted(t.mirror_set.keys(), key=len)[0]]
-                uri = mirror.get_repo_urls()[0]
-                base_components = t.components if len(t.components)>0 else t.parents[0].components
-                components = [ x.name for x in base_components ]
-                print(src.add(t.type, uri, t.name, [ x.name for x in t.components ]))
+            # TODO: Implement mirror selection.
+            for t in filter(lambda t: match_distro(t.name), di.templates):
+                base_uri = t.base_uri if t.base_uri is not None else t.parents[0].base_uri
+                base_components = [ c.name for c in (t.components if
+                    len(t.components)>0 else t.parents[0].components) ]
+                src.add(t.type, base_uri, t.name, base_components)
         else:
             entries = list(find_entries(src.list, opts))
             if len(entries) == 0:
