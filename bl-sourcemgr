@@ -180,6 +180,10 @@ def main():
     opts = get_options()
     deletion_queue = []
 
+    if opts.verb != "find" and os.geteuid() > 0:
+        print("Error: The given action requires root privileges.")
+        return 1
+
     try:
         src = sourceslist.SourcesList()
 
