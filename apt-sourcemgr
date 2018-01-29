@@ -236,6 +236,9 @@ def main():
                 if opts.component is not None:
                     base_components = list(filter(lambda c: c in opts.component,
                         base_components))
+                    if len(base_components) == 0:
+                        print("Error: No components left for template after filtering.", file=sys.stderr)
+                        return EXIT_FAILURE
                 src.add(t.type, base_uri, t.name, base_components)
         else:
             entries = list(find_entries(src.list, opts))
