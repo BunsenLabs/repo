@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# apt-sourcemgr - CLI around python-apt for simpe APT sources.list entry management
+# apt-sourcemgr - CLI around python-apt for simple APT sources.list entry management
 # Copyright (C) 2018 Jens John <dev ! 2ion ! de>
 # 
 # This program is free software: you can redistribute it and/or modify
@@ -31,24 +31,33 @@ def get_options():
     ap.add_argument("verb",
             choices=["add","remove","enable","disable","find","apply-template"],
             help="""
-Action the program takes.
+Action the program takes. If there is an error, the program will exit
+with EXIT_FAILURE (see below for numeric exit codes).
 
 add - Ensure that a sources.list entry conforming to the specification
 is present.
+
+apply-template - Ensures that all sources.list entries mandated by the
+given APT template are present and enabled. Use --template to pass in
+the template name.
+
+disable - Find existing entries matching the filter specification, and
+ensure they're disabled (commented out).
+
+enable - Find existing entries matching the filter specification, and
+ensure they're enabled (not commented out).
+
+find - Print all sources.list entries matching the filter specification
+to stdout. If no match is found and there was no general error, exists
+with EXIT_NOMATCH.
 
 remove - Remove all sources.list entries matching the filter
 specification. If any matching entry resides in a file with other
 entries, the entry won't get removed but disabled instead.
 
-enable - Find existing entries matching the filter specification, and
-ensure they're enabled (not commented out).
 
-disable - Find existing entries matching the filter specification, and
-ensure they're disabled (commented out).
-
-apply-template - Ensures that all sources.list entries mandated by the
-given APT template are present and enabled. Use --template to pass in
-the template name.
+EXIT STATUS CODES: 0 - no error (EXIT_SUCCESS), 1 - general faillure
+(EXIT_FAILURE), 2 - no match (EXIT_NOMATCH).
 """)
     ap.add_argument("-F", "--file",
             default=None,
