@@ -191,7 +191,7 @@ def find_entries(entries, opts):
 def main():
     opts = get_options()
 
-    if opts.verb != "find" and os.geteuid() > 0:
+    if opts.verb != "find" and (not opts.simulate and os.geteuid() > 0):
         print("Error: The given action requires root privileges.",
                 file=sys.stderr)
         return EXIT_FAILURE
