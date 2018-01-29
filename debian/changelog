@@ -1,0 +1,5 @@
+apt-sourcemgr (0.1.0-1) unstable; urgency=medium
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- root <root@debian9.localdomain>  Mon, 29 Jan 2018 12:09:11 +0000
