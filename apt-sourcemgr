@@ -18,11 +18,13 @@
 
 from aptsources import sourceslist, distinfo
 from argparse import (ArgumentParser, ArgumentDefaultsHelpFormatter, ArgumentError)
+import apt_pkg
 import os
 import re
 import sys
 
 EXIT_SUCCESS, EXIT_FAILURE, EXIT_NOMATCH = 0, 1, 2
+APT_SOURCE_PARTSDIR = apt_pkg.config.find_dir("Dir::Etc::sourceparts")
 
 def get_options():
     ap = ArgumentParser(description="""CLI for managing local APT sources.list configuration""",
@@ -236,13 +238,15 @@ def main():
                 base_uri = t.base_uri if t.base_uri is not None else t.parents[0].base_uri
                 base_components = [ c.name for c in (t.components if
                     len(t.components)>0 else t.parents[0].components) ]
+                target_file = opts.file or "{}/{}.list".format(APT_SOURCE_PARTSDIR,
+                        opts.template.lower())
                 if opts.component is not None:
                     base_components = list(filter(lambda c: c in opts.component,
                         base_components))
                     if len(base_components) == 0:
                         print("Error: No components left for template after filtering.", file=sys.stderr)
                         return EXIT_FAILURE
-                print(src.add(t.type, base_uri, t.name, base_components))
+                print(src.add(t.type, base_uri, t.name, base_components, file=target_file))
         else:
             entries = list(find_entries(src.list, opts))
             if len(entries) == 0:
