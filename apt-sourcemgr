@@ -222,7 +222,7 @@ def main():
             if not all([opts.type, opts.uri, opts.distribution,
                 opts.component]):
                 raise BaseException("Not enough arguments: add")
-            src.add(opts.type, opts.uri, opts.distribution, opts.component, **kwargs)
+            print(src.add(opts.type, opts.uri, opts.distribution, opts.component, **kwargs))
 
         elif opts.verb == "apply-template":
             def match_distro(v):
@@ -242,7 +242,7 @@ def main():
                     if len(base_components) == 0:
                         print("Error: No components left for template after filtering.", file=sys.stderr)
                         return EXIT_FAILURE
-                src.add(t.type, base_uri, t.name, base_components)
+                print(src.add(t.type, base_uri, t.name, base_components))
         else:
             entries = list(find_entries(src.list, opts))
             if len(entries) == 0:
