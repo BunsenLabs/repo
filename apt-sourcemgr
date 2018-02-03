@@ -126,6 +126,11 @@ Applies only to: --architecture, --component.
             help="""
 --uri, --distribution and --component will now be evaluated as
 case-insensitive regular expressions against the entry.
+
+When used with `apply-template`, the behaviour of --component is
+different. Only the first occurrence of --component will be taken as the
+regex and only components matching that regex will be included in the
+final entry.
 """)
     ap.add_argument("-t", "--type",
             default=None,
@@ -243,11 +248,16 @@ def main():
                 target_file = opts.file or "{}/{}.list".format(APT_SOURCE_PARTSDIR,
                         opts.template.lower())
                 if opts.component is not None:
-                    base_components = list(filter(lambda c: c in opts.component,
-                        base_components))
+                    if opts.regex:
+                        r = re.compile(opts.component[0], flags=re.IGNORECASE)
+                        base_components = list(filter(r.search, base_components))
+                    else:
+                        base_components = list(filter(lambda c: c in opts.component,
+                            base_components))
                     if len(base_components) == 0:
                         print("Error: No components left for template after filtering.", file=sys.stderr)
                         return EXIT_FAILURE
+                print(base_components)
                 print(src.add(t.type, base_uri, t.name, base_components, file=target_file))
         else:
             entries = list(find_entries(src.list, opts))
