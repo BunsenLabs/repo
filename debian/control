@@ -4,10 +4,10 @@ Priority: optional
 Maintainer: Jens John <dev@2ion.de>
 Build-Depends: debhelper (>= 9), dh-python, python-all, python-setuptools, python3-all, python3-setuptools, python3-apt
 Standards-Version: 3.9.8
-Homepage: https://github.com/BunsenLabs/bunsen-sourcemgr
+Homepage: https://github.com/BunsenLabs/apt-sourcemgr
 X-Python3-Version: >= 3.2
-Vcs-Git: https://github.com/BunsenLabs/bunsen-sourcemgr.git
-Vcs-Browser: https://github.com/BunsenLabs/bunsen-sourcemgr
+Vcs-Git: https://github.com/BunsenLabs/apt-sourcemgr.git
+Vcs-Browser: https://github.com/BunsenLabs/apt-sourcemgr
 
 
 Package: apt-sourcemgr

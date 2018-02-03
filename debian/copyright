@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: apt-sourcemgr
-Source: <https://github.com/BunsenLabs/bunsen-sourcemgr>
+Source: <https://github.com/BunsenLabs/apt-sourcemgr>
 
 Files: *
 Copyright: 2018 Jens John <dev@2ion.de>
