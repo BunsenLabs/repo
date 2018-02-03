@@ -256,8 +256,7 @@ def main():
                             base_components))
                     if len(base_components) == 0:
                         print("Error: No components left for template after filtering.", file=sys.stderr)
-                        return EXIT_FAILURE
-                print(base_components)
+                        return EXIT_NOMATCH
                 print(src.add(t.type, base_uri, t.name, base_components, file=target_file))
         else:
             entries = list(find_entries(src.list, opts))
