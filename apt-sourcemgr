@@ -124,8 +124,8 @@ Applies only to: --architecture, --component.
             default=False,
             action="store_true",
             help="""
-When used with the `find` action, --uri and --distribution will now be
-evaluated as case-insensitive regular expressions against the entry.
+--uri, --distribution and --component will now be evaluated as
+case-insensitive regular expressions against the entry.
 """)
     ap.add_argument("-t", "--type",
             default=None,
@@ -169,6 +169,8 @@ def find_entries(entries, opts):
             return True
 
         if opts.fuzzy:
+            if opts.regex:
+                return any(map(lambda xx: not not re.search(y, xx, flags=re.IGNORECASE)))
             return any([ x.count(yy) > 0 for yy in y ])
 
         return set(x) == set(y)
