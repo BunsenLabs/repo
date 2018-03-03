@@ -111,12 +111,6 @@ options:
     help: |
       Do not save any changes, and log all changed source entries to
       stdout.
-  - names: [ '-v', '--verbose' ]
-    default: False
-    action: store_true
-    help: |
-      Log program action to standard error, and log all changed source
-      entries to standard output.
   - names: ['-T', '--template' ]
     help: |
       Derive all specifications from the given pyton-apt template. Only
