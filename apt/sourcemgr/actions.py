@@ -32,7 +32,7 @@ def add(src: SourcesList, opts: Namespace, deletion_queue: List[str]) -> int:
     print(src.add(opts.type, opts.uri, opts.distribution, opts.component, **kwargs))
     return EXIT_SUCCESS
 
-@register('apply_template')
+@register('apply-template')
 def apply_template(src: SourcesList, opts: Namespace, deletion_queue: List[str]) -> int:
     def match_distro(v):
         if opts.regex:
