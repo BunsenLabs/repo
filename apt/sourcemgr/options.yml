@@ -45,10 +45,12 @@ options:
       but disabled), the existing entry will be reused, modified and the
       file argument will be ignored.
   - names: [ '-D', '--disabled' ]
+    default: null
     action: store_true
     help: |
       Matches disabled (commented-out) entries.
   - names: [ '-E', '--enabled' ]
+    default: null
     action: store_true
     help: |
       Matches enabled entries.
