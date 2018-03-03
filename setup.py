@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 from setuptools import setup
-from apt.sourcemgr import version
+from apt.sourcemgr import VERSION
 
 setup(  name="apt-sourcemgr",
-        version=version,
+        version=VERSION,
         scripts=["apt-sourcemgr"],
         install_requires=["python-apt"],
         author="Jens John",
