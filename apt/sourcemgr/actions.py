@@ -11,10 +11,10 @@ import sys
 FUNCTION_TABLE = dict()
 
 def register(key):
-		def __register(func):
-			FUNCTION_TABLE[key] = func
-			return func
-		return __register
+    def __register(func):
+        FUNCTION_TABLE[key] = func
+        return func
+    return __register
 
 #######################################################################
 
