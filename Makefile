@@ -2,12 +2,15 @@
 # Copyright (C) 2015 Jens John <dev@2ion.de>
 # Licensed under the GNU General Public License v3+
 
-MANPAGE_SOURCES = $(wildcard *.mkd)
+MANPAGE_SOURCES = apt-sourcemgr.1.mkd
 MANPAGE_TARGETS = $(patsubst %.mkd,%.gz,$(MANPAGE_SOURCES))
 
 mancat = $(subst .,,$(suffix $(patsubst %.gz,%,$(1))))
 
-all: $(MANPAGE_TARGETS)
+all: $(MANPAGE_SOURCES) $(MANPAGE_TARGETS)
+
+apt-sourcemgr.1.mkd: README.md
+	cp $< $@
 
 %.gz: %.mkd
 	$(info PANDOC $<)
@@ -16,7 +19,7 @@ all: $(MANPAGE_TARGETS)
 	@gzip -f9 $(@:.gz=)
 
 clean:
-	@rm -f -- $(MANPAGE_TARGETS)
+	@rm -f -- $(MANPAGE_SOURCES) $(MANPAGE_TARGETS)
 	@echo Clean.
 
 install: $(MANPAGE_TARGETS)
