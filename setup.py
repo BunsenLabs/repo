@@ -8,7 +8,10 @@ if sys.version_info < (3,5):
 
 setup(  name="apt-sourcemgr",
         version=VERSION,
-        install_requires=["python-apt"],
+        install_requires=[
+                "python-apt",
+                "PyYAML",
+        ],
         author="Jens John",
         author_email="dev@2ion.de",
         packages=find_packages(exclude=['apt']),
