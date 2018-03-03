@@ -1,5 +1,6 @@
 from apt.sourcemgr import EXIT_FAILURE, EXIT_NOMATCH, EXIT_SUCCESS
 from apt.sourcemgr.match import find_entries
+from aptsources import distinfo
 from aptsources.sourceslist import SourcesList
 from argparse import Namespace
 from typing import List
