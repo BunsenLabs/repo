@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from setuptools import setup
+from setuptools import setup, find_packages
 from apt.sourcemgr import VERSION
 import sys
 
@@ -12,6 +12,8 @@ setup(  name="apt-sourcemgr",
         install_requires=["python-apt"],
         author="Jens John",
         author_email="dev@2ion.de",
+        packages=find_packages(exclude=['apt']),
+        include_package_data=True,
         description="CLI around python-apt for simple APT sources.list entry management",
         license="GPL3",
         keywords="apt dpkg sources.list",
