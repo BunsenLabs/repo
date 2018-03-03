@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from apt.sourcemgr import options
+from apt.sourcemgr import EXIT_SUCCESS, EXIT_FAILURE
 from apt.sourcemgr.actions import FUNCTION_TABLE
 from aptsources import sourceslist, distinfo
 import os
@@ -26,6 +27,7 @@ import sys
 
 def main() -> int:
     opts = options.get()
+    ret = EXIT_SUCCESS
 
     if opts.verb != "find" and (not opts.simulate and os.geteuid() > 0):
         print("Error: The given action requires root privileges.",
@@ -41,9 +43,7 @@ def main() -> int:
     try:
         deletion_queue = []
         src = sourceslist.SourcesList()
-
         ret = FUNCTION_TABLE[opts.verb](src, opts, deletion_queue)
-
         if not opts.simulate and opts.verb != "find":
             src.save()
             for path in deletion_queue:
@@ -52,7 +52,7 @@ def main() -> int:
         print("ERROR, will not save any change(s):", e, file=sys.stderr)
         return EXIT_FAILURE
 
-    return EXIT_SUCCESS
+    return ret
 
 if __name__ == "__main__":
     sys.exit(main())
