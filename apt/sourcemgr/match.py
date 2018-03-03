@@ -1,4 +1,4 @@
-from aptsources import SourceEntry
+from aptsources.sourceslist import SourceEntry
 from argparse import Namespace
 from typing import List, Generator, Union
 import re
