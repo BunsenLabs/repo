@@ -24,7 +24,7 @@ import re
 import sys
 
 
-def main():
+def main() -> int:
     opts = options.get()
 
     if opts.verb != "find" and (not opts.simulate and os.geteuid() > 0):
