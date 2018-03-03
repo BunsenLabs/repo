@@ -1,4 +1,4 @@
-from apt.sourcemgr import EXIT_FAILURE, EXIT_NOMATCH, EXIT_SUCCESS
+from apt.sourcemgr import EXIT_FAILURE, EXIT_NOMATCH, EXIT_SUCCESS, APT_SOURCE_PARTSDIR
 from apt.sourcemgr.match import find_entries
 from aptsources import distinfo
 from aptsources.sourceslist import SourcesList
