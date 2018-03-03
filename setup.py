@@ -8,7 +8,6 @@ if sys.version_info < (3,5):
 
 setup(  name="apt-sourcemgr",
         version=VERSION,
-        scripts=["apt-sourcemgr"],
         install_requires=["python-apt"],
         author="Jens John",
         author_email="dev@2ion.de",
@@ -17,5 +16,6 @@ setup(  name="apt-sourcemgr",
         description="CLI around python-apt for simple APT sources.list entry management",
         license="GPL3",
         keywords="apt dpkg sources.list",
+        entry_points={'console_scripts':['apt-sourcemgr = apt.sourcemgr.__main__:main']},
         url="https://github.com/BunsenLabs/bunsen-sourcemgr",
 )

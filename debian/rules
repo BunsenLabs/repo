@@ -1,14 +1,12 @@
 #!/usr/bin/make -f
 # See debhelper(7) (uncomment to enable)
 # output every command that modifies files on the build system.
-#export DH_VERBOSE = 1
 
-export PYBUILD_NAME=apt-sourcemgr
-export PYBUILD_INSTALL_ARGS=--install-lib=/usr/share/apt-sourcemgr/
+export DH_VERBOSE = 1
+export PYBUILD_DISABLE_python2=1
 
 %:
-	dh $@ --with python3 --buildsystem=pybuild
-
+	dh $@ --with=python3 --buildsystem=pybuild
 
 # If you need to rebuild the Sphinx documentation
 # Add spinxdoc to the dh --with line
