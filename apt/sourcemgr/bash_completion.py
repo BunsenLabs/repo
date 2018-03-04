@@ -1,5 +1,5 @@
-from apt.sourcemgr import EXIT_SUCCESS, EXIT_FAILURE, TEMPLATE_DIR, OPTION_SPECPATH
-from jinja2 import FileSystemLoader, Environment
+from apt.sourcemgr import EXIT_SUCCESS, EXIT_FAILURE, OPTION_SPECPATH
+from jinja2 import PackageLoader, Environment
 import shlex
 import sys
 import yaml
@@ -8,15 +8,14 @@ def main() -> int:
     try:
         with open(OPTION_SPECPATH, "r") as FILE:
             spec = yaml.load(FILE)
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR),
-                trim_blocks=True)
+        env = Environment(loader=PackageLoader("apt.sourcemgr"))
 
         dashed_options = [ shlex.quote(" ".join(opt['names']))
                 for opt in spec['options'] if len(opt['names']) > 1 ]
         dashed_options = " ".join(dashed_options)
 
-        verb_options = [ shlex.quote(opt['names'][0])
-                for opt in spec['options'] if len(opt['names']) == 1 ]
+        verb_options = [ shlex.quote(" ".join(opt['choices']))
+                for opt in spec['options'] if "verb" in opt['names'] ]
         verb_options = " ".join(verb_options)
 
         template = env.get_template("bash_completion.jinja")
