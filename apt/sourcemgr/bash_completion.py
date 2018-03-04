@@ -1,4 +1,4 @@
-from apt.sourcemgr import EXIT_SUCCESS, EXIT_FAILURE, TEMPLATE_DIR
+from apt.sourcemgr import EXIT_SUCCESS, EXIT_FAILURE, TEMPLATE_DIR, OPTION_SPECPATH
 from jinja2 import FileSystemLoader, Environment
 import shlex
 import sys
