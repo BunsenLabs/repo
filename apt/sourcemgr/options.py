@@ -1,10 +1,9 @@
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, Namespace
-import os
+from apt.sourcemgr import OPTION_SPECPATH
 import yaml
 
 def get() -> Namespace:
-        specpath = os.path.dirname(os.path.abspath(__file__)) + "/options.yml"
-        with open(specpath, "r") as FILE:
+        with open(OPTION_SPECPATH, "r") as FILE:
                 spec = yaml.load(FILE)
         p = ArgumentParser(description = spec['program_description'],
                         formatter_class = ArgumentDefaultsHelpFormatter)
