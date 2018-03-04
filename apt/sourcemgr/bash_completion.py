@@ -1,6 +1,5 @@
 from apt.sourcemgr import EXIT_SUCCESS, EXIT_FAILURE, OPTION_SPECPATH
 from jinja2 import PackageLoader, Environment
-import shlex
 import sys
 import yaml
 
@@ -10,11 +9,11 @@ def main() -> int:
             spec = yaml.load(FILE)
         env = Environment(loader=PackageLoader("apt.sourcemgr"))
 
-        dashed_options = [ shlex.quote(" ".join(opt['names']))
+        dashed_options = [ " ".join(opt['names'])
                 for opt in spec['options'] if len(opt['names']) > 1 ]
         dashed_options = " ".join(dashed_options)
 
-        verb_options = [ shlex.quote(" ".join(opt['choices']))
+        verb_options = [ " ".join(opt['choices'])
                 for opt in spec['options'] if "verb" in opt['names'] ]
         verb_options = " ".join(verb_options)
 

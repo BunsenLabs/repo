@@ -3,8 +3,8 @@
 _apt_sourcemgr () {
   local cur=${COMP_WORDS[COMP_CWORD]}
   local prev=${COMP_WORDS[COMP_CWORD-1]}
-  local dashed="{{ dashed_options }}"
-  local verbs="{{ verb_options }}"
+  local dashed="{{ dashed_options | safe }}"
+  local verbs="{{ verb_options | safe }}"
   if [[ -z "$cur"  ]]; then
     COMPREPLY=($(compgen -W "$dashed $verbs" -- "$cur"))
     return
