@@ -14,7 +14,7 @@ apt-sourcemgr.1.mkd: README.md
 
 %.gz: %.mkd
 	$(info PANDOC $<)
-	@pandoc -s -f markdown -t man -o $(@:.gz=) $<
+	@pandoc -s -f markdown+pipe_tables -t man -o $(@:.gz=) $<
 	$(info GZIP $(@:.gz=))
 	@gzip -f9 $(@:.gz=)
 
