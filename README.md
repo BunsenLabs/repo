@@ -8,7 +8,7 @@ apt-sourcemgr - Tool for managing local APT sources.list configuration
 
 # SYNOPSIS
 
-apt-sourcemgr [`-h` | `--help`] [`OPTION`]... [`--`] `ACTION`
+apt-sourcemgr [`-h` | `--help`] `ACTION` [`OPTION`]...
 
 # DESCRIPTION
 
