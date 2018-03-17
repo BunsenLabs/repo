@@ -6,7 +6,7 @@ if sys.version_info < (3,5):
         raise Exception("This program only supports Python 3.5 or later.")
 
 setup(  name="apt-sourcemgr",
-        version="0.1",
+        version="0.2",
         install_requires=[
                 "python-apt",
                 "PyYAML",
@@ -25,5 +25,5 @@ setup(  name="apt-sourcemgr",
                         'bash_completion_gen_apt_sourcemgr = apt.sourcemgr.bash_completion:main'
                 ]
         },
-        url="https://github.com/BunsenLabs/bunsen-sourcemgr",
+        url="https://github.com/BunsenLabs/apt-sourcemgr",
 )
