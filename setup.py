@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 from setuptools import setup, find_packages
-from apt.sourcemgr import VERSION
 import sys
 
 if sys.version_info < (3,5):
         raise Exception("This program only supports Python 3.5 or later.")
 
 setup(  name="apt-sourcemgr",
-        version=VERSION,
+        version="0.1",
         install_requires=[
                 "python-apt",
                 "PyYAML",
