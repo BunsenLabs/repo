@@ -47,6 +47,7 @@ def apply_template(src: SourcesList, opts: Namespace, deletion_queue: List[str])
             len(t.components)>0 else t.parents[0].components) ]
         target_file = opts.file or "{}/{}.list".format(APT_SOURCE_PARTSDIR,
                 opts.template.lower())
+        deletion_queue.append(target_file)
         if opts.component is not None:
             if opts.regex:
                 r = re.compile(opts.component[0], flags=re.IGNORECASE)

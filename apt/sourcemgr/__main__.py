@@ -45,9 +45,10 @@ def main() -> int:
         src = sourceslist.SourcesList()
         ret = FUNCTION_TABLE[opts.verb](src, opts, deletion_queue)
         if not opts.simulate and opts.verb != "find":
-            src.save()
             for path in deletion_queue:
-                os.remove(path)
+                if os.access(path, os.F_OK | os.W_OK):
+                    os.remove(path)
+            src.save()
     except BaseException as e:
         print("ERROR, will not save any change(s):", e, file=sys.stderr)
         return EXIT_FAILURE
