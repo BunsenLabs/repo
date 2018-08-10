@@ -58,7 +58,7 @@ def apply_template(src: SourcesList, opts: Namespace, deletion_queue: List[str])
                 print("Error: No components left for template after filtering.", file=sys.stderr)
                 return EXIT_NOMATCH
         print(src.add(t.type, base_uri, t.name, base_components, file=target_file))
-        return EXIT_SUCCESS
+    return EXIT_SUCCESS
 
 @register('find')
 def find(src: SourcesList, opts: Namespace, deletion_queue: List[str]) -> int:
