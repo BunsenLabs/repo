@@ -1,0 +1,3 @@
+[submodule "vendor/python-apt"]
+	path = vendor/python-apt
+	url = https://salsa.debian.org/apt-team/python-apt.git
