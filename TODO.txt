@@ -1,3 +1,0 @@
- * Refactor all actions into separate functions, and refactor the script
-   into a module with CLI entry point.
- * Then, implement tests.
