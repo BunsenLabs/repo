@@ -1,21 +1,21 @@
 import logging
-import os
-import re
 
 import click
 import click_log
+click_log.basic_config()
 
-from .model import Model
+from .manager import SourceManager, parse_printable_format, PrintableFormat
 
 logger = logging.getLogger(__name__)
-click_log.basic_config(logger)
+fmt = PrintableFormat.TEXT
 
 @click.command("ls")
 @click.option("--all/--no-all", default=False, help="Also list disabled (commented) entries")
 def ls(all) -> int:
     """ List enabled sources.list entries. """
-    m = Model()
-    print("\n".join(str(e) for e in m.entries(include_disabled=all)))
+    with SourceManager(save=False, backup=False) as mgr:
+        entries = mgr.entries(include_disabled=all)
+        print(mgr.printable(entries, fmt=fmt))
     return 0
 
 @click.command("add")
@@ -25,37 +25,43 @@ def ls(all) -> int:
 @click.option("-c", "--component", multiple=True, default=list(), required=True)
 @click.option("-d", "--distribution", required=True)
 def add(type, uri, arch, component, distribution):
-    """ Add a specific entry to sources.list. If an entry matching the parameters already exists in
-    disabled state, the existing entry will be enabled instead. """
+    """ Ensure a specific entry exists in sources.list, and is enabled. """
     return 0
 
 @click.command("insert")
 @click.argument("source-entry", nargs=-1)
 def insert(source_entry):
-    """ Add entries by specifying entries as they should appear in sources.list """
+    """ Add multiple entry lines to sources.list. """
     print(source_entry)
     return 0
 
 @click.command("enable")
 def enable():
-    """ Based on the given filter options, enable all matching entries in sources.list. """
+    """ Enable all matching entries. """
     return 0
 
 @click.command("disable")
 def disable():
-    """ Based on the given filter options, disable all matching entries in sources.list. """
+    """ Disable all matching entries. """
     return 0
 
 @click.command("rm")
 def rm():
-    """ Based on the given filter options, remove all matching entries in sources.list. """
+    """ Remove all matching entries. """
+    return 0
+
+@click.command("test")
+def test():
+    """ Test if a matching entry exists in sources.list. Useful in scripting. """
     return 0
 
 @click.group()
-@click_log.simple_verbosity_option(logger)
-def entrypoint():
+@click.option("-f", "--format", type=click.Choice(["text", "json"]), default="text", help="Change sources.list entry presentation format")
+@click_log.simple_verbosity_option()
+def entrypoint(format: str):
     """ Simple APT sources.list management tool """
-    pass
+    global fmt
+    fmt = parse_printable_format(format) 
 
 entrypoint.add_command(add)
 entrypoint.add_command(disable)

@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "sourcemgr"
+name = "repomgr"
 version = "0.99.0"
-description = "Simple APT package source management"
+description = "Simplified APT repository management"
 authors = ["Jens John <dev@2ion.de>"]
 license = "GPL-3+"
 
@@ -18,7 +18,7 @@ pylint = "^2.7.4"
 pytest = "^6.2.2"
 
 [tool.poetry.scripts]
-sourcemgr = "sourcemgr.cmdline:entrypoint"
+repo = "repomgr.cmdline:entrypoint"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
