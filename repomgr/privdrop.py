@@ -6,7 +6,6 @@ logger = logging.getLogger(__name__)
 
 def privdrop(user: str = "_apt") -> bool:
     olduid = os.getuid()
-    oldgid = os.getgid()
 
     if user == "root":
         logger.debug("privdrop: privdropping to root makes no sense")
