@@ -15,7 +15,7 @@ repomgr_$(VERSION)_$(ARCH).deb: repomgr.dist repomgr.shim
 		-d python3                       \
 		-d python3-apt                   \
 		.=/opt/bunsenlabs/repomgr        \
-		../repomgr.shim=/usr/bin/repomgr
+		../repomgr.shim=/usr/bin/repo
 	cd repomgr.dist && mv $@ ./..
 
 repomgr.dist: repomgr.shim
