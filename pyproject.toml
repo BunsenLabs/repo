@@ -8,11 +8,13 @@ license = "GPL-3+"
 [tool.poetry.dependencies]
 python = "^3.8"
 python-debian = "^0.1.39"
-click = "^7.1.2"
-click-log = "^0.3.2"
+click = "7.1.2"
+click-log = "0.3.2"
 
 [tool.poetry.dev-dependencies]
 python-apt = { path = "vendor/python-apt" }
+wheel2deb = "^0.5.8"
+Nuitka = "^0.6.16"
 
 [tool.poetry.scripts]
 repo = "repomgr.cmdline:entrypoint"

@@ -1,3 +1,6 @@
 .pybuild
 __pycache__
 *.pyc
+repomgr.build
+repomgr.dist
+*.deb

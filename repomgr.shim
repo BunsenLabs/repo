@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+readonly BINDIR=/opt/bunsenlabs/repomgr
+cd "$BINDIR"
+exec ./repomgr "$@"
