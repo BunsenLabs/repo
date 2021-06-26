@@ -5,7 +5,6 @@ import click_log
 click_log.basic_config()
 
 from .manager import SourceManager, parse_printable_format, PrintableFormat
-from .privdrop import privdrop
 
 logger = logging.getLogger(__name__)
 fmt = PrintableFormat.TEXT
@@ -16,7 +15,6 @@ flag_save = True
 @click.option("--all/--no-all", default=False, help="Also list disabled (commented) entries")
 def ls(all) -> int:
     """ List enabled sources.list entries. """
-    assert privdrop() == True
     with SourceManager(save=False, backup=False) as mgr:
         entries = mgr.entries(include_disabled=all)
         print(mgr.printable(entries, fmt=fmt))
@@ -64,7 +62,6 @@ def rm():
 @click.command("test")
 def test():
     """ Test if a matching entry exists in sources.list. Useful in scripting. """
-    assert privdrop() == True
     return 0
 
 @click.group()
