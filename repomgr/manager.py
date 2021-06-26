@@ -1,6 +1,6 @@
 from contextlib import AbstractContextManager
 from enum import Enum
-from typing import List
+from typing import List, Optional
 import json
 import logging
 
@@ -30,6 +30,21 @@ class ExtSourcesList(SourcesList):
             return list(self.__valid_entries())
         else:
             return [ e for e in self.__valid_entries() if not e.disabled ]
+
+    def add_from_line(self, line: str) -> SourceEntry:
+        """ Given a sources.list line, parse the lines and add them to
+        the source. """
+        entry = SourceEntry(line)
+        if entry.invalid:
+            raise ValueError(f"Could not parse line: {line}")
+        return self.add(
+            entry.type,
+            entry.uri,
+            entry.dist,
+            entry.comps,
+            entry.comment,
+            architectures=entry.architectures,
+        )
 
     def printable(self, entries: List[SourceEntry], fmt: PrintableFormat = PrintableFormat.TEXT) -> str:
         """ Given a list of SourceEntry, format them into a printable representation and return that

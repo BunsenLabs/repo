@@ -9,6 +9,8 @@ from .privdrop import privdrop
 
 logger = logging.getLogger(__name__)
 fmt = PrintableFormat.TEXT
+flag_backup = False
+flag_save = True
 
 @click.command("ls")
 @click.option("--all/--no-all", default=False, help="Also list disabled (commented) entries")
@@ -28,13 +30,20 @@ def ls(all) -> int:
 @click.option("-d", "--distribution", required=True)
 def add(type, uri, arch, component, distribution):
     """ Ensure a specific entry exists in sources.list, and is enabled. """
-    return 0
+    with SourceManager(save=flag_save, backup=flag_backup) as mgr:
+        if entry := mgr.add(type, uri, distribution, component, architectures=arch):
+            print(mgr.printable([entry], fmt=fmt))
+            return 0
+    return 1
 
 @click.command("insert")
 @click.argument("source-entry", nargs=-1)
 def insert(source_entry):
     """ Add multiple entry lines to sources.list. """
-    print(source_entry)
+    with SourceManager(save=flag_save, backup=flag_backup) as mgr:
+        for line in source_entry:
+            if entry := mgr.add_from_line(line):
+                print(mgr.printable([entry], fmt=fmt))
     return 0
 
 @click.command("enable")
@@ -60,11 +69,17 @@ def test():
 
 @click.group()
 @click.option("-f", "--format", type=click.Choice(["text", "json"]), default="text", help="Change sources.list entry presentation format")
+@click.option("--backup/--no-backup", default=False, help="For actions modifying the sources.list, always create a backup before applying changes")
+@click.option("--save/--no-save", default=True, help="Optionally disable saving of any changes applied to sources.list. Usefull only for debugging")
 @click_log.simple_verbosity_option()
-def entrypoint(format: str):
+def entrypoint(format: str, backup: bool, save: bool):
     """ Simple APT sources.list management tool """
     global fmt
+    global flag_save
+    global flag_backup
     fmt = parse_printable_format(format) 
+    flag_backup = backup
+    flag_save = save
 
 entrypoint.add_command(add)
 entrypoint.add_command(disable)
