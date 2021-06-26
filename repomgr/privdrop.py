@@ -4,6 +4,14 @@ import pwd
 
 logger = logging.getLogger(__name__)
 
+def privhave() -> bool:
+    """ Ensure that we are root as we are expecting to modify the
+    package manager configuration. """
+    if (euid := os.geteuid()) != 0:
+        logger.error("privhave: running with euid=%d, expected 0", euid)
+        return False
+    return True
+
 def privdrop(user: str = "_apt") -> bool:
     olduid = os.getuid()
 

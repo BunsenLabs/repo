@@ -6,7 +6,7 @@ import logging
 
 from aptsources.sourceslist import SourcesList, SourceEntry
 
-from repomgr.privdrop import privdrop
+from repomgr.privdrop import privdrop, privhave
 
 logger = logging.getLogger(__name__)
 
@@ -85,11 +85,13 @@ class SourceManager(AbstractContextManager):
 
     def __enter__(self) -> ExtSourcesList:
         self.__sourceslist = ExtSourcesList()
-        if not (self.__save and self.__backup):
+        if not (self.__save or self.__backup):
             # For any instances that do not require to do any writing
             # actions to the file system, we privdrop.
             logger.debug("Dropping privileges for non-write instance of SourceManager")
             assert privdrop() == True, "Failed to drop privileges for non-write instance of SourceManager"
+        else:
+            assert privhave() == True, "Requiring root privileges."
         if self.__backup:
             extension = self.__sourceslist.backup()
             logger.debug("Created sources.list backup with extension: %s", extension)
