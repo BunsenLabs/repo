@@ -17,15 +17,19 @@ flag_backup = False
 flag_save = True
 
 @click.command("ls")
-@click.option("--all/--no-all", default=False, help="Also list disabled (commented) entries")
 @click.argument("filter-expr", nargs=-1)
-def ls(all, filter_expr) -> int:
+def ls(filter_expr) -> int:
     """ List enabled sources.list entries."""
+    if len(filter_expr) == 0:
+        filter_expr = ['disabled=false']
+    try:
+        f = SourceEntryFilter(filter_expr)
+    except ValueError as err:
+        logger.error(err)
+        return 1
     with SourceManager(save=False, backup=False) as mgr:
-        entries = mgr.entries(include_disabled=all)
-        if len(filter_expr) > 0:
-            f = SourceEntryFilter(filter_expr)
-            entries = f.filter(entries)
+        entries = mgr.entries(include_disabled=True)
+        entries = f.filter(entries)
         print(mgr.printable(entries, fmt=fmt))
     return 0
 
