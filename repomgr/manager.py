@@ -1,6 +1,6 @@
 from contextlib import AbstractContextManager
 from enum import Enum
-from typing import List, Optional, Callable, Iterator
+from typing import List, Optional, Callable
 import json
 import logging
 import re
@@ -23,11 +23,24 @@ def parse_printable_format(key: str) -> PrintableFormat:
     raise ValueError(f"String {key} is not an index to PrintableFormat enum")
 
 class SourceEntryFilter:
+    """ A user-exposable filter engine operating on lists of
+    SourceEntry. """
+
     OPERATORS = {
         "=": lambda x, y: x == y,
         "!": lambda x, y: x != y,
         "~": lambda x, y: re.search(y, x, flags=re.IGNORECASE) is not None,
         "^": lambda x, y: re.search(y, x, flags=re.IGNORECASE) is None,
+    }
+    # Because SourceEntry has some ugly field names as an implementation
+    # detail, we perform alias translation for the SourceEntry fields we
+    # commonly expose in the CLI.
+    ALIAS = {
+        "arch"         : "architectures",
+        "architecture" : "architectures",
+        "component"    : "comps",
+        "components"   : "comps",
+        "distribution" : "dist",
     }
 
     def __init__(self, expressions: List[str]):
@@ -48,8 +61,11 @@ class SourceEntryFilter:
     def __parsexpr(self, s: str) -> Callable[[SourceEntry], bool]:
         if m := re.match(r"^(?P<field>\w+)(?P<op>[=!~^])(?P<oparg>.+)$", s):
             d = m.groupdict()
-            field, op, oparg = d["field"], d["op"], d["oparg"]
             logger.debug("SourceEntryFilter: parse %s", d)
+            field, op, oparg = d["field"], d["op"], d["oparg"]
+            if alias := SourceEntryFilter.ALIAS.get(field, None):
+                logger.debug("SourceEntryFilter: alias %s -> %s", field, alias)
+                field = alias
             def func(e: SourceEntry) -> bool:
                 try:
                     v = getattr(e, field)
