@@ -166,7 +166,7 @@ pyyaml = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "4c9166ec5dd0233265462b8dc6d011d2c58718aa5d4034afa4163167b5241588"
+content-hash = "44936764d05776e4e3c3f0b0478a7912bf57a82d772bcf7191626f8ca9a7f6c1"
 
 [metadata.files]
 attrs = [
@@ -247,7 +247,6 @@ pyparsing = [
     {file = "pyparsing-2.4.7-py2.py3-none-any.whl", hash = "sha256:ef9d7589ef3c200abe66653d3f1ab1033c3c419ae9b9bdb1240a85b024efc88b"},
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
 ]
-python-apt = []
 python-debian = [
     {file = "python-debian-0.1.39.tar.gz", hash = "sha256:6cca96239b5981f5203216d2113fea522477628607ed0a8427e15094a792541c"},
     {file = "python_debian-0.1.39-py3-none-any.whl", hash = "sha256:338951c25091ad88cf23a7621c2e15e5212efa66bc364d3e236a0e25aec935d2"},

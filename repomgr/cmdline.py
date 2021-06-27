@@ -4,7 +4,12 @@ import click
 import click_log
 click_log.basic_config()
 
-from .manager import SourceManager, parse_printable_format, PrintableFormat
+from .manager import (
+    PrintableFormat,
+    SourceEntryFilter,
+    SourceManager,
+    parse_printable_format,
+)
 
 logger = logging.getLogger(__name__)
 fmt = PrintableFormat.TEXT
@@ -13,19 +18,23 @@ flag_save = True
 
 @click.command("ls")
 @click.option("--all/--no-all", default=False, help="Also list disabled (commented) entries")
-def ls(all) -> int:
-    """ List enabled sources.list entries. """
+@click.argument("filter-expr", nargs=-1)
+def ls(all, filter_expr) -> int:
+    """ List enabled sources.list entries."""
     with SourceManager(save=False, backup=False) as mgr:
         entries = mgr.entries(include_disabled=all)
+        if len(filter_expr) > 0:
+            f = SourceEntryFilter(filter_expr)
+            entries = list(f.filter(entries))
         print(mgr.printable(entries, fmt=fmt))
     return 0
 
 @click.command("add")
-@click.option("-t", "--type", default="deb")
-@click.option("-u", "--uri", required=True)
 @click.option("-a", "--arch", multiple=True)
 @click.option("-c", "--component", multiple=True, default=list(), required=True)
 @click.option("-d", "--distribution", required=True)
+@click.option("-t", "--type", default="deb")
+@click.option("-u", "--uri", required=True)
 def add(type, uri, arch, component, distribution):
     """ Ensure a specific entry exists in sources.list, and is enabled. """
     with SourceManager(save=flag_save, backup=flag_backup) as mgr:
@@ -45,8 +54,19 @@ def insert(source_entry):
     return 0
 
 @click.command("enable")
-def enable():
-    """ Enable all matching entries. """
+@click.argument("expression", nargs=-1)
+def enable(expression):
+    """ Enable all matching entries. Specify matches by piling on
+    expressions. Expressions are constructed as (attribute)(operator)
+    (operator-argument). An entry will match if all expressions match on
+    it.  Operators: = (string equality), ! (string inequality), ~ (regex
+    match), ^ (string prefix match).  Examples: distribution=lithium,
+    uri~^http://, distribution!buster """
+    try:
+        f = SourceEntryFilter(expression)
+    except ValueError as err:
+        logger.error("parser error: %s", err)
+        return 1
     return 0
 
 @click.command("disable")

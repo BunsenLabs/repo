@@ -1,8 +1,9 @@
 from contextlib import AbstractContextManager
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Callable, Iterator
 import json
 import logging
+import re
 
 from aptsources.sourceslist import SourcesList, SourceEntry
 
@@ -11,6 +12,7 @@ from repomgr.privdrop import privdrop, privhave
 logger = logging.getLogger(__name__)
 
 PrintableFormat = Enum("PrintableFormat", "TEXT JSON")
+SourceFilterExprOp = Enum("SourceFilterExprOp", "EQ NE REGEX NREGEX")
 
 def parse_printable_format(key: str) -> PrintableFormat:
     """ For a given string key, return a matching PrintableFormat if it exists. """
@@ -19,6 +21,52 @@ def parse_printable_format(key: str) -> PrintableFormat:
         if pf.name == _key:
             return PrintableFormat(pf.value)
     raise ValueError(f"String {key} is not an index to PrintableFormat enum")
+
+class SourceEntryFilter:
+    OPERATORS = {
+        "=": lambda x, y: x == y,
+        "!": lambda x, y: x != y,
+        "~": lambda x, y: re.search(y, x, flags=re.IGNORECASE) is not None,
+        "^": lambda x, y: re.search(y, x, flags=re.IGNORECASE) is None,
+    }
+
+    def __init__(self, expressions: List[str]):
+        self.__expressions = expressions
+        self.__parse()
+
+    def __parse(self):
+        composite = []
+        for e in self.__expressions:
+            composite.append(self.__parsexpr(e))
+        self.__filter = lambda e: (
+            all([ func(e) for func in composite ])
+        )
+
+    def filter(self, entries: List[SourceEntry]) -> Iterator[SourceEntry]:
+        return filter(self.__filter, entries)
+
+    def __parsexpr(self, s: str) -> Callable[[SourceEntry], bool]:
+        if m := re.match(r"^(?P<field>\w+)(?P<op>[=!~^])(?P<oparg>.+)$", s):
+            d = m.groupdict()
+            field, op, oparg = d["field"], d["op"], d["oparg"]
+            logger.debug("SourceEntryFilter: parse %s", d)
+            def func(e: SourceEntry) -> bool:
+                try:
+                    v = getattr(e, field)
+                except AttributeError:
+                    return False
+                if isinstance(v, (str, int, float,)):
+                    return SourceEntryFilter.OPERATORS[op](str(v), oparg)
+                elif isinstance(v, list):
+                    return any([
+                        SourceEntryFilter.OPERATORS[op](str(vv), oparg)
+                        for vv in v
+                    ])
+                else:
+                    return False
+            return func
+        else:
+            raise ValueError(f"invalid filter expression: <{s}>")
 
 class ExtSourcesList(SourcesList):
     """ Extensions to python-apt's aptsources.sourceslist.SourcesList class """
@@ -104,5 +152,6 @@ class SourceManager(AbstractContextManager):
                 logger.debug("Saved sources list upon exit")
             return True
         else:
-            logger.error("Sources list not saved due to previous error(s)")
+            if self.__save:
+                logger.error("Sources list not saved due to previous error(s)")
             pass # do not suppress exception
