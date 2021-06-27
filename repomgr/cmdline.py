@@ -25,7 +25,7 @@ def ls(all, filter_expr) -> int:
         entries = mgr.entries(include_disabled=all)
         if len(filter_expr) > 0:
             f = SourceEntryFilter(filter_expr)
-            entries = list(f.filter(entries))
+            entries = f.filter(entries)
         print(mgr.printable(entries, fmt=fmt))
     return 0
 

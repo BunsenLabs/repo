@@ -42,8 +42,8 @@ class SourceEntryFilter:
             all([ func(e) for func in composite ])
         )
 
-    def filter(self, entries: List[SourceEntry]) -> Iterator[SourceEntry]:
-        return filter(self.__filter, entries)
+    def filter(self, entries: List[SourceEntry]) -> List[SourceEntry]:
+        return list(filter(self.__filter, entries))
 
     def __parsexpr(self, s: str) -> Callable[[SourceEntry], bool]:
         if m := re.match(r"^(?P<field>\w+)(?P<op>[=!~^])(?P<oparg>.+)$", s):
