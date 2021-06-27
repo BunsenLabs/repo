@@ -19,7 +19,43 @@ flag_save = True
 @click.command("ls")
 @click.argument("filter-expr", nargs=-1)
 def ls(filter_expr) -> int:
-    """ List enabled sources.list entries."""
+    """ List enabled sources.list entries.
+
+    A filter expression is a string which has the form
+    (field)(operator)(argument) and works by checking if the field of a
+    source entry object equals the value of the argument. The semantics of
+    determining equality are based on the selected operator.
+
+    Note that filter expressions should always be single-quoted when used in
+    shell scripts to reduce the risk of unexpected shell expansions.
+
+    Common fields are: type, uri, architecture, component, distribution,
+    disabled, enabled.
+
+    Supported operators are: = (equality), ! (inquality), ~ (regex match)
+    and ^ (inverted regex match).
+
+    Examples:
+
+    disabled=true - show only disabled entries
+
+    disabled=false - show only enabled entries
+
+    disabled~(true|false) - show both disabled and enabled entries
+
+    uri~https:// - show only https-hosted entries
+
+    distribution~^focal - show only entries with a distribution that
+    starts with the string focal
+
+    component=main - show only entries that have a component main
+    defined
+
+    arch=amd64 - show only entries that have an explicit architecture
+    amd64 defined.
+    """
+
+
     if len(filter_expr) == 0:
         filter_expr = ['disabled=false']
     try:
@@ -58,19 +94,9 @@ def insert(source_entry):
     return 0
 
 @click.command("enable")
-@click.argument("expression", nargs=-1)
-def enable(expression):
-    """ Enable all matching entries. Specify matches by piling on
-    expressions. Expressions are constructed as (attribute)(operator)
-    (operator-argument). An entry will match if all expressions match on
-    it.  Operators: = (string equality), ! (string inequality), ~ (regex
-    match), ^ (string prefix match).  Examples: distribution=lithium,
-    uri~^http://, distribution!buster """
-    try:
-        f = SourceEntryFilter(expression)
-    except ValueError as err:
-        logger.error("parser error: %s", err)
-        return 1
+@click.argument("filter-expr", nargs=-1)
+def enable(filter_expr):
+    """ Enable all matching entries."""
     return 0
 
 @click.command("disable")
