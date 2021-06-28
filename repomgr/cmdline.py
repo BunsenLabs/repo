@@ -67,7 +67,7 @@ def ls(filter_expr) -> int:
         entries = mgr.entries(include_disabled=True)
         entries = f.filter(entries)
         print(mgr.printable(entries, fmt=fmt))
-    return 0
+        return 0 if len(entries) > 0 else 1
 
 @click.command("add")
 @click.option("-a", "--arch", multiple=True)
@@ -91,6 +91,9 @@ def insert(source_entry):
         for line in source_entry:
             if entry := mgr.add_from_line(line):
                 print(mgr.printable([entry], fmt=fmt))
+            else:
+                logger.error("failed to create entry from line: %s", line)
+                return 1
     return 0
 
 @click.command("enable")

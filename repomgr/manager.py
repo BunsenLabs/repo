@@ -27,10 +27,12 @@ class SourceEntryFilter:
     SourceEntry. """
 
     OPERATORS = {
-        "=": lambda x, y: x == y,
-        "!": lambda x, y: x != y,
-        "~": lambda x, y: re.search(y, x, flags=re.IGNORECASE) is not None,
-        "^": lambda x, y: re.search(y, x, flags=re.IGNORECASE) is None,
+        # ours := source entry field value
+        # theirs := user input
+        "=": lambda ours, theirs: ours == theirs,
+        "!": lambda ours, theirs: ours != theirs,
+        "~": lambda ours, theirs: re.search(theirs, ours, flags=re.IGNORECASE) is not None,
+        "^": lambda ours, theirs: re.search(theirs, ours, flags=re.IGNORECASE) is None,
     }
     # Because SourceEntry has some ugly field names as an implementation
     # detail, we perform alias translation for the SourceEntry fields we
@@ -71,7 +73,9 @@ class SourceEntryFilter:
                     v = getattr(e, field)
                 except AttributeError:
                     return False
-                if isinstance(v, (str, int, float, bool,)):
+                if isinstance(v, (str, int, float,)):
+                    return SourceEntryFilter.OPERATORS[op](str(v), oparg)
+                elif isinstance(v, bool):
                     return SourceEntryFilter.OPERATORS[op](str(v).lower(), oparg)
                 elif isinstance(v, list):
                     return any([
