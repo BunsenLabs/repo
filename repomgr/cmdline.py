@@ -1,10 +1,12 @@
+""" repo command line interface """
+
 import logging
 
 import click
 import click_log
 click_log.basic_config()
 
-from .manager import (
+from .sourcemgr import (
     PrintableFormat,
     SourceEntryFilter,
     SourceManager,
@@ -55,14 +57,15 @@ def ls(filter_expr) -> int:
     amd64 defined.
     """
 
-
     if len(filter_expr) == 0:
-        filter_expr = ['disabled=false']
+        filter_expr = ['disabled=False']
+
     try:
         f = SourceEntryFilter(filter_expr)
     except ValueError as err:
         logger.error(err)
         return 1
+
     with SourceManager(save=False, backup=False) as mgr:
         entries = mgr.entries(include_disabled=True)
         entries = f.filter(entries)
@@ -118,7 +121,7 @@ def test():
     return 0
 
 @click.group()
-@click.option("-f", "--format", type=click.Choice(["text", "json"]), default="text", help="Change sources.list entry presentation format")
+@click.option("-f", "--format", type=click.Choice(["text", "json", "shell"]), default="text", help="Change sources.list entry presentation format")
 @click.option("--backup/--no-backup", default=False, help="For actions modifying the sources.list, always create a backup before applying changes")
 @click.option("--save/--no-save", default=True, help="Optionally disable saving of any changes applied to sources.list. Usefull only for debugging")
 @click_log.simple_verbosity_option()

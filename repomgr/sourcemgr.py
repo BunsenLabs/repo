@@ -1,9 +1,15 @@
+""" This module implements functionality for managing representations of
+pointers on the system. It does so by editing APT's sources.list
+configuration files. """
+
 from contextlib import AbstractContextManager
 from enum import Enum
 from typing import List, Optional, Callable
 import json
 import logging
 import re
+import shlex
+import shutil
 
 from aptsources.sourceslist import SourcesList, SourceEntry
 
@@ -11,7 +17,7 @@ from repomgr.privdrop import privdrop, privhave
 
 logger = logging.getLogger(__name__)
 
-PrintableFormat = Enum("PrintableFormat", "TEXT JSON")
+PrintableFormat = Enum("PrintableFormat", "TEXT JSON SHELL")
 SourceFilterExprOp = Enum("SourceFilterExprOp", "EQ NE REGEX NREGEX")
 
 def parse_printable_format(key: str) -> PrintableFormat:
@@ -76,7 +82,7 @@ class SourceEntryFilter:
                 if isinstance(v, (str, int, float,)):
                     return SourceEntryFilter.OPERATORS[op](str(v), oparg)
                 elif isinstance(v, bool):
-                    return SourceEntryFilter.OPERATORS[op](str(v).lower(), oparg)
+                    return SourceEntryFilter.OPERATORS[op](str(v), oparg)
                 elif isinstance(v, list):
                     return any([
                         SourceEntryFilter.OPERATORS[op](str(vv), oparg)
@@ -119,8 +125,21 @@ class ExtSourcesList(SourcesList):
     def printable(self, entries: List[SourceEntry], fmt: PrintableFormat = PrintableFormat.TEXT) -> str:
         """ Given a list of SourceEntry, format them into a printable representation and return that
         string. """
+
         if fmt == PrintableFormat.TEXT:
             return "\n".join(str(e) for e in entries)
+
+        elif fmt == PrintableFormat.SHELL:
+            txt = """declare -A REPO_RESULTS=(\n"""
+            for e in entries:
+                for c in e.comps:
+                    txt += "[{}]={}\n".format(
+                        shlex.quote("{}/{}/{}".format(e.type, e.dist, c)),
+                        shlex.quote(str(e)),
+                    )
+            txt += ")"
+            return txt
+
         elif fmt == PrintableFormat.JSON:
             return json.dumps({
                 "entries": [
