@@ -13,7 +13,7 @@ import shutil
 
 from aptsources.sourceslist import SourcesList, SourceEntry
 
-from repomgr.privdrop import privdrop, privhave
+from repo.privdrop import privdrop, privhave
 
 logger = logging.getLogger(__name__)
 

@@ -2,25 +2,25 @@ VERSION ?= 0.99.0
 ARCH ?= amd64
 DIST ?= lithium
 
-repomgr_$(VERSION)_$(ARCH).deb: repomgr.dist repomgr.shim
-	chmod 755 repomgr.dist/repomgr
-	chmod 644 repomgr.dist/*.so
-	chmod 755 repomgr.shim
-	cd repomgr.dist && fpm             \
+repo_$(VERSION)_$(ARCH).deb: repo.dist repo.shim
+	chmod 755 repo.dist/repo
+	chmod 644 repo.dist/*.so
+	chmod 755 repo.shim
+	cd repo.dist && fpm             \
 		-s dir                           \
 		-t deb                           \
 		--deb-dist $(DIST)               \
-		-n repomgr                       \
+		-n repo                       \
 		-v $(VERSION)                    \
 		-d python3                       \
 		-d python3-apt                   \
-		.=/opt/bunsenlabs/repomgr        \
-		../repomgr.shim=/usr/bin/repo
-	cd repomgr.dist && mv $@ ./..
+		.=/opt/bunsenlabs/repo        \
+		../repo.shim=/usr/bin/repo
+	cd repo.dist && mv $@ ./..
 
-repomgr.dist: repomgr.shim
+repo.dist: repo.shim
 	poetry install
-	poetry run nuitka3 --standalone repomgr
+	poetry run nuitka3 --standalone repo
 
 clean:
-	-rm -rf -- ./repomgr.build ./repomgr.dist *.deb
+	-rm -rf -- ./repo.build ./repo.dist *.deb

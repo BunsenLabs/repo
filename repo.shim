@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+readonly BINDIR=/opt/bunsenlabs/repo
+cd "$BINDIR"
+exec ./repo "$@"

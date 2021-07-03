@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "repomgr"
+name = "repo"
 version = "0.99.0"
 description = "Simplified APT repository management"
 authors = ["Jens John <dev@2ion.de>"]
@@ -16,7 +16,7 @@ pydantic = "^1.8.2"
 Nuitka = "^0.6.16"
 
 [tool.poetry.scripts]
-repo = "repomgr.cmdline:entrypoint"
+repo = "repo.cmdline:entrypoint"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
