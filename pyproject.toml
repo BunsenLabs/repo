@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "repo"
+version = "0.99.0"
+description = "Simplified APT repository management"
+authors = ["Jens John <dev@2ion.de>"]
+license = "GPL-3+"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+python-debian = "^0.1.39"
+click = "7.1.2"
+click-log = "0.3.2"
+pydantic = "^1.8.2"
+
+[tool.poetry.dev-dependencies]
+Nuitka = "^0.6.16"
+
+[tool.poetry.scripts]
+repo = "repo.cmdline:entrypoint"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

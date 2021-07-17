@@ -1,27 +1,26 @@
-# Makefile for building and installing man pages
-# Copyright (C) 2015 Jens John <dev@2ion.de>
-# Licensed under the GNU General Public License v3+
+VERSION ?= 0.99.0
+ARCH ?= amd64
+DIST ?= lithium
 
-MANPAGE_SOURCES = apt-sourcemgr.1.mkd
-MANPAGE_TARGETS = $(patsubst %.mkd,%.gz,$(MANPAGE_SOURCES))
+repo_$(VERSION)_$(ARCH).deb: repo.dist repo.shim
+	chmod 755 repo.dist/repo
+	chmod 644 repo.dist/*.so
+	chmod 755 repo.shim
+	cd repo.dist && fpm             \
+		-s dir                           \
+		-t deb                           \
+		--deb-dist $(DIST)               \
+		-n repo                       \
+		-v $(VERSION)                    \
+		-d python3                       \
+		-d python3-apt                   \
+		.=/opt/bunsenlabs/repo        \
+		../repo.shim=/usr/bin/repo
+	cd repo.dist && mv $@ ./..
 
-mancat = $(subst .,,$(suffix $(patsubst %.gz,%,$(1))))
-
-all: $(MANPAGE_SOURCES) $(MANPAGE_TARGETS)
-
-apt-sourcemgr.1.mkd: README.md
-	cp $< $@
-
-%.gz: %.mkd
-	$(info PANDOC $<)
-	@pandoc -s -f markdown+pipe_tables -t man -o $(@:.gz=) $<
-	$(info GZIP $(@:.gz=))
-	@gzip -f9 $(@:.gz=)
+repo.dist: repo.shim
+	poetry install
+	poetry run nuitka3 --standalone repo
 
 clean:
-	@rm -f -- $(MANPAGE_SOURCES) $(MANPAGE_TARGETS)
-	@echo Clean.
-
-install: $(MANPAGE_TARGETS)
-	$(foreach m,$^,$(shell install -Dm644 $(m) $(DESTDIR)$(PREFIX)/usr/share/man/man$(call mancat,$(m))/$(m)))
-
+	-rm -rf -- ./repo.build ./repo.dist *.deb
