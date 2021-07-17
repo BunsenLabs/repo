@@ -102,22 +102,55 @@ def insert(source_entry):
 @click.command("enable")
 @click.argument("filter-expr", nargs=-1)
 def enable(filter_expr):
-    """ Enable all matching entries."""
+    """ Enable all matching entries. Each modified entry is reported. """
+    if len(filter_expr) == 0:
+        return 0
+
+    try:
+        f = SourceEntryFilter(filter_expr)
+    except ValueError as err:
+        logger.error(err)
+        return 1
+
+    with SourceManager(save=flag_save, backup=flag_backup) as mgr:
+        entries = mgr.entries(include_disabled=True)
+        entries = f.filter(entries)
+        changes = []
+        for e in entries:
+            if e.disabled:
+                e.set_enabled(True)
+                changes.append(e)
+        print(mgr.printable(changes, fmt=fmt))
     return 0
 
 @click.command("disable")
-def disable():
+@click.argument("filter-expr", nargs=-1)
+def disable(filter_expr):
     """ Disable all matching entries. """
+    if len(filter_expr) == 0:
+        return 0
+
+    try:
+        f = SourceEntryFilter(filter_expr)
+    except ValueError as err:
+        logger.error(err)
+        return 1
+
+    with SourceManager(save=flag_save, backup=flag_backup) as mgr:
+        entries = mgr.entries(include_disabled=True)
+        entries = f.filter(entries)
+        changes = []
+        for e in entries:
+            if not e.disabled:
+                e.set_enabled(False)
+                changes.append(e)
+        print(mgr.printable(changes, fmt=fmt))
+
     return 0
 
 @click.command("rm")
 def rm():
     """ Remove all matching entries. """
-    return 0
-
-@click.command("test")
-def test():
-    """ Test if a matching entry exists in sources.list. Useful in scripting. """
     return 0
 
 @click.group()
