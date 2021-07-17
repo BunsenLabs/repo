@@ -1,2 +1,2 @@
-from repomgr.cmdline import entrypoint
+from repo.cmdline import entrypoint
 entrypoint()

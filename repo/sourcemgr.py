@@ -79,13 +79,12 @@ class SourceEntryFilter:
                     v = getattr(e, field)
                 except AttributeError:
                     return False
-                if isinstance(v, (str, int, float,)):
-                    return SourceEntryFilter.OPERATORS[op](str(v), oparg)
-                elif isinstance(v, bool):
-                    return SourceEntryFilter.OPERATORS[op](str(v), oparg)
+                _oparg = oparg.lower()
+                if isinstance(v, (str, int, float, bool,)):
+                    return SourceEntryFilter.OPERATORS[op](str(v).lower(), oparg.lower())
                 elif isinstance(v, list):
                     return any([
-                        SourceEntryFilter.OPERATORS[op](str(vv), oparg)
+                        SourceEntryFilter.OPERATORS[op](str(vv).lower(), oparg.lower())
                         for vv in v
                     ])
                 else:
